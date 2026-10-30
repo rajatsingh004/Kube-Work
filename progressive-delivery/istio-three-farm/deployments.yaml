@@ -1,0 +1,96 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-stable
+  namespace: demo
+spec:
+  replicas: 6
+  selector:
+    matchLabels: { app: demo-farms, track: stable }
+  template:
+    metadata:
+      labels: { app: demo-farms, track: stable }
+    spec:
+      containers:
+        - name: app
+          image: hashicorp/http-echo:1.0.0
+          args: ["-listen=:8080", "-text=stable-v1"]
+          ports: [{ name: http, containerPort: 8080 }]
+          resources:
+            requests: { cpu: 50m, memory: 32Mi }
+            limits: { cpu: 250m, memory: 64Mi }
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 10001
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: { drop: ["ALL"] }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-candidate
+  namespace: demo
+spec:
+  replicas: 2
+  selector:
+    matchLabels: { app: demo-farms, track: candidate }
+  template:
+    metadata:
+      labels: { app: demo-farms, track: candidate }
+    spec:
+      containers:
+        - name: app
+          image: hashicorp/http-echo:1.0.0
+          args: ["-listen=:8080", "-text=candidate-v2"]
+          ports: [{ name: http, containerPort: 8080 }]
+          resources:
+            requests: { cpu: 50m, memory: 32Mi }
+            limits: { cpu: 250m, memory: 64Mi }
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 10001
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: { drop: ["ALL"] }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-control
+  namespace: demo
+spec:
+  replicas: 2
+  selector:
+    matchLabels: { app: demo-farms, track: control }
+  template:
+    metadata:
+      labels: { app: demo-farms, track: control }
+    spec:
+      containers:
+        - name: app
+          image: hashicorp/http-echo:1.0.0
+          args: ["-listen=:8080", "-text=control-v0"]
+          ports: [{ name: http, containerPort: 8080 }]
+          resources:
+            requests: { cpu: 50m, memory: 32Mi }
+            limits: { cpu: 250m, memory: 64Mi }
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 10001
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: { drop: ["ALL"] }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo-farms
+  namespace: demo
+spec:
+  selector:
+    app: demo-farms
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080

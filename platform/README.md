@@ -1,11 +1,11 @@
 # Platform extension path
 
-Add capabilities in separately reviewed steps; each has its own IAM, compatibility, cost, and rollback requirements.
+The base lab deliberately keeps the application and cluster infrastructure small. Extend it in stages and document verification and rollback for each component.
 
-1. Install Argo CD for GitOps with a least-privilege deploy identity.
-2. Add Argo Rollouts and traffic routing for progressive delivery, including abort criteria.
-3. Select an ingress/Gateway API implementation and document TLS, DNS, and network policy.
-4. Add metrics, dashboards, logs, tracing, alert ownership, and service objectives.
-5. Add image scanning, admission policy, IRSA usage, and periodic access reviews.
+1. **GitOps:** install Argo CD, keep manifests in Git, and use a least-privilege deploy identity.
+2. **Progressive delivery:** add Argo Rollouts and a traffic-routing provider; define abort and rollback conditions.
+3. **Ingress:** select AWS Load Balancer Controller or a Gateway API implementation, then document TLS, DNS, and network policy.
+4. **Observability:** add metrics, dashboards, logs, and tracing; define alert ownership and useful SLOs.
+5. **Security:** use IRSA for AWS access, image scanning, admission policy, and periodic access reviews.
 
-These components are not installed automatically by the base Terraform configuration.
+Avoid installing all of these automatically in the base Terraform apply. Each has separate IAM, version, cost, and lifecycle implications.

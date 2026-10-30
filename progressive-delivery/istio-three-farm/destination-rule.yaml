@@ -1,0 +1,20 @@
+apiVersion: networking.istio.io/v1
+kind: DestinationRule
+metadata:
+  name: demo-farms
+  namespace: demo
+spec:
+  host: demo-farms.demo.svc.cluster.local
+  trafficPolicy:
+    tls:
+      mode: ISTIO_MUTUAL
+  subsets:
+    - name: stable
+      labels:
+        track: stable
+    - name: candidate
+      labels:
+        track: candidate
+    - name: control
+      labels:
+        track: control

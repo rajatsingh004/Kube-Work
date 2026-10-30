@@ -4,8 +4,8 @@ module "vpc" {
 
   name = var.cluster_name
   cidr = var.vpc_cidr
-  azs  = var.availability_zones
 
+  azs              = var.availability_zones
   private_subnets = [
     cidrsubnet(var.vpc_cidr, 8, 1),
     cidrsubnet(var.vpc_cidr, 8, 2),
@@ -14,14 +14,17 @@ module "vpc" {
     cidrsubnet(var.vpc_cidr, 8, 101),
     cidrsubnet(var.vpc_cidr, 8, 102),
   ]
-
   enable_nat_gateway   = true
   single_nat_gateway   = true
   enable_dns_hostnames = true
   enable_dns_support   = true
 
-  public_subnet_tags  = { "kubernetes.io/role/elb" = "1" }
-  private_subnet_tags = { "kubernetes.io/role/internal-elb" = "1" }
+  public_subnet_tags = {
+    "kubernetes.io/role/elb" = "1"
+  }
+  private_subnet_tags = {
+    "kubernetes.io/role/internal-elb" = "1"
+  }
 
   tags = {
     Project     = "eks-platform-engineering-lab"
@@ -35,14 +38,13 @@ module "eks" {
 
   cluster_name    = var.cluster_name
   cluster_version = var.kubernetes_version
-
-  cluster_endpoint_public_access  = true
+  cluster_endpoint_public_access = true
   cluster_endpoint_private_access = true
 
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnets
 
-  enable_irsa               = true
+  enable_irsa = true
   cluster_enabled_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
 
   eks_managed_node_groups = {

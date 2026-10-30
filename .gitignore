@@ -1,0 +1,15 @@
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+crash.log
+*.pem
+*.key
+*.kubeconfig
+.env
+.env.*
+__pycache__/
+.pytest_cache/
+.venv/
+venv/
+*.py[cod]

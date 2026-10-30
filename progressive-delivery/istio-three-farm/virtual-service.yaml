@@ -1,0 +1,29 @@
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: demo-farms
+  namespace: demo
+spec:
+  hosts:
+    - demo-farms.demo.svc.cluster.local
+  http:
+    - name: primary-canary-control-split
+      route:
+        - destination:
+            host: demo-farms.demo.svc.cluster.local
+            subset: stable
+            port:
+              number: 8080
+          weight: 98
+        - destination:
+            host: demo-farms.demo.svc.cluster.local
+            subset: candidate
+            port:
+              number: 8080
+          weight: 1
+        - destination:
+            host: demo-farms.demo.svc.cluster.local
+            subset: control
+            port:
+              number: 8080
+          weight: 1
